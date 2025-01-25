@@ -59,24 +59,29 @@ def show_data():
     selected = portfolio_listbox.curselection()
     if not selected:
         messagebox.showerror("Selection Error", "Please select a ticker from the portfolio.")
-        return
-
+        
     selected_index = selected[0]
     ticker = portfolio[selected_index]["ticker"]
     time_frame = simpledialog.askstring("Time Frame", "Enter the time frame (e.g., 1d, 1mo, 1y):")
     if not time_frame:
         messagebox.showerror("Input Error", "Please provide a valid time frame.")
-        return
-
-    try:
-        data = history_of_spec_stock(ticker, time_frame)
-        portfolio_listbox.delete(0, tk.END)  # Clear the listbox
-        portfolio_listbox.insert(tk.END, f"Historical Data for {ticker} ({time_frame}):")
-        portfolio_listbox.insert(tk.END, data)
-    except Exception as e:
-        messagebox.showerror("Error", f"Failed to fetch data: {e}")
-
-
+        
+    popup = tk.Toplevel(root)
+    popup.title("Data Of Stock")
+    popup.geometry("400x300")
+    text_frame = tk.Frame(popup)
+    text_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+    text_widget = tk.Text(text_frame, wrap=tk.WORD, height=15, width=50)
+    scrollbar = tk.Scrollbar(text_frame, command=text_widget.yview)
+    text_widget.configure(yscrollcommand=scrollbar.set)
+    text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+    long_message = (history_of_spec_stock(ticker, time_frame))
+    text_widget.insert(tk.END, long_message)
+    text_widget.config(state=tk.DISABLED)
+    close_button = tk.Button(popup, text="Close", command=popup.destroy)
+    close_button.pack(pady=10)
+    
 def remove():
     selected = portfolio_listbox.curselection()
     if not selected:
@@ -97,7 +102,8 @@ root.title("Stock Tracker")
 portfolio = []
 ticker_var = tk.StringVar()
 
-# GUI Components
+
+
 tk.Label(root, text="Enter Stock Name:", bg="lightblue", fg="white").grid(row=0, column=0, padx=10, pady=10)
 stock_name_entry = tk.Entry(root, width=30)
 stock_name_entry.grid(row=0, column=1, padx=10, pady=10)
