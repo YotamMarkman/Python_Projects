@@ -92,8 +92,33 @@ def remove():
     portfolio_listbox.delete(selected_index) 
     portfolio.pop(selected_index)  
     messagebox.showinfo("Success", "Selected stock removed from portfolio.")
+
+def submit_amount():
+    global investment_amount
+    amount = amount_entry.get()  
+    if not amount:
+        messagebox.showerror("Input Error", "Please enter an amount.")
+        return
+    try:
+        # Try to convert the input to a float
+        investment_amount = float(amount)
+        messagebox.showinfo("Success", f"Amount of ${investment_amount:.2f} saved!")
+        amount_label.config(text=f"${investment_amount}")  # Update the Amount label
+        root1.destroy()  # Close the investment amount window
+    except ValueError:
+        messagebox.showerror("Input Error", "Please enter a valid numeric amount.")
+    
         
 # GUI Setup
+root1 = tk.Tk()
+root1.config(bg="lightblue")
+root1.title("Amount To Invest")
+tk.Label(root1, text="How much can you invest($):", bg="lightblue", fg="white").grid(row=0, column=0, padx=10, pady=10)
+amount_entry = tk.Entry(root1, width=30)
+amount_entry.grid(row=0, column=1, padx=10, pady=10)
+submit_amount_button = tk.Button(root1, text="Sumbit", command=submit_amount)
+submit_amount_button.grid(row=0, column=3, padx=10, pady=10)
+
 root = tk.Tk()
 root.configure(bg="lightblue")
 root.title("Stock Tracker")
@@ -101,35 +126,38 @@ root.title("Stock Tracker")
 # Variables
 portfolio = []
 ticker_var = tk.StringVar()
+investment_amount = None
 
+# Labels and inputs for Stock Tracker
+tk.Label(root, text="Amount:", bg="lightblue", fg="white").grid(row=0, column=0, padx=10, pady=10)
+amount_label = tk.Label(root, text="$0.00", bg="lightblue", fg="white") 
+amount_label.grid(row=0, column=1, padx=10, pady=10)
 
-
-tk.Label(root, text="Enter Stock Name:", bg="lightblue", fg="white").grid(row=0, column=0, padx=10, pady=10)
+tk.Label(root, text="Enter Stock Name:", bg="lightblue", fg="white").grid(row=1, column=0, padx=10, pady=10)
 stock_name_entry = tk.Entry(root, width=30)
-stock_name_entry.grid(row=0, column=1, padx=10, pady=10)
+stock_name_entry.grid(row=1, column=1, padx=10, pady=10)
 
 find_ticker_button = tk.Button(root, text="Find Ticker", command=fetch_stock_data)
-find_ticker_button.grid(row=0, column=2, padx=10, pady=10)
+find_ticker_button.grid(row=1, column=2, padx=10, pady=10)
 
-tk.Label(root, text="Last Found Ticker:", bg="lightblue", fg="white").grid(row=1, column=0, padx=10, pady=10)
-tk.Entry(root, textvariable=ticker_var, state="readonly", width=30).grid(row=1, column=1, padx=10, pady=10)
+tk.Label(root, text="Last Found Ticker:", bg="lightblue", fg="white").grid(row=2, column=0, padx=10, pady=10)
+tk.Entry(root, textvariable=ticker_var, state="readonly", width=30).grid(row=2, column=1, padx=10, pady=10)
 
 add_button = tk.Button(root, text="Add to Portfolio", command=add_to_portfolio)
-add_button.grid(row=2, column=0, padx=10, pady=10)
+add_button.grid(row=3, column=0, padx=10, pady=10)
 
 show_portfolio_button = tk.Button(root, text="Show Portfolio", command=show_portfolio)
-show_portfolio_button.grid(row=2, column=1, padx=10, pady=10)
+show_portfolio_button.grid(row=3, column=1, padx=10, pady=10)
 
 show_data_of_stock_button = tk.Button(root, text="Show Data", command=show_data)
-show_data_of_stock_button.grid(row=2, column=2, padx=10, pady=10)
+show_data_of_stock_button.grid(row=3, column=2, padx=10, pady=10)
 
 reset_button = tk.Button(root, text="Remove Stock", command=remove)
-reset_button.grid(row=6, column=2, padx= 10, pady=10 )
+reset_button.grid(row=4, column=2, padx=10, pady=10)
 
-
-tk.Label(root, text="Portfolio:", bg="lightblue", fg="white").grid(row=3, column=0, padx=10, pady=10)
+tk.Label(root, text="Portfolio:", bg="lightblue", fg="white").grid(row=4, column=0, padx=10, pady=10)
 portfolio_listbox = tk.Listbox(root, height=10, width=50)
-portfolio_listbox.grid(row=3, column=1, padx=10, pady=10)
+portfolio_listbox.grid(row=4, column=1, padx=10, pady=10)
 
 # Run the GUI
 root.mainloop()
