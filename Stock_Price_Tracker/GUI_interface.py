@@ -55,10 +55,41 @@ def history_of_spec_stock(name_of_stock: str, time_period: str):
     data = ticker.history(period=time_period)
     return data
 
+def ask_for_number_of_stock():
+    number_of_stocks = simpledialog.askstring("Amount Of Stock", "How much of this stock would you like?", parent=root)
+    if not number_of_stocks:
+        messagebox.showerror("Amount Of Stock", "Please request an amount.")
+        return
+    popup = tk.Toplevel(root)
+    popup.title("Amount Of Stock")
+    popup.geometry("400x300")
+    text_frame = tk.Frame(popup)
+    text_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
+    text_widget = tk.Text(text_frame, wrap=tk.WORD, height=15, width=50)
+    scrollbar = tk.Scrollbar(text_frame, command=text_widget.yview)
+    text_widget.configure(yscrollcommand=scrollbar.set)
+    text_widget.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+    text_widget.insert(tk.END, f"You requested {number_of_stocks} stocks.")
+    text_widget.config(state=tk.DISABLED)
+    close_button = tk.Button(popup, text="Close", command=popup.destroy)
+    close_button.pack(pady=10)
+        
+def stock_price_per_share(ticker_symbol) -> float:
+    stock = yf.Ticker(ticker_symbol)
+    try:
+        current_price = stock.info['regularMarketPrice']
+        print(f"The current price of {ticker_symbol} is: ${current_price}")
+        return round(current_price,2)
+    except KeyError:
+        print(f"Could not retrieve the price for {ticker_symbol}. Check the ticker symbol.")
+        return None
+      
 def show_data():
     selected = portfolio_listbox.curselection()
     if not selected:
         messagebox.showerror("Selection Error", "Please select a ticker from the portfolio.")
+    
         
     selected_index = selected[0]
     ticker = portfolio[selected_index]["ticker"]
@@ -154,6 +185,9 @@ show_data_of_stock_button.grid(row=3, column=2, padx=10, pady=10)
 
 reset_button = tk.Button(root, text="Remove Stock", command=remove)
 reset_button.grid(row=4, column=2, padx=10, pady=10)
+
+ask_for_number_of_stock_button = tk.Button(root, text="Request Amount", command=ask_for_number_of_stock )
+ask_for_number_of_stock_button.grid(row=6, column=0,padx=10,pady=10)
 
 tk.Label(root, text="Portfolio:", bg="lightblue", fg="white").grid(row=4, column=0, padx=10, pady=10)
 portfolio_listbox = tk.Listbox(root, height=10, width=50)
