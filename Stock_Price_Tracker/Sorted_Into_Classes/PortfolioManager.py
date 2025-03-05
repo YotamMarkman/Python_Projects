@@ -9,9 +9,16 @@ API_key = "156DW7OTQGTLJESV"
 class PortfolioManager:
     def __init__(self):
         self.portfolio = []
+        self.stock_cache = {}
 
     def add_stock(self, ticker: str):
-        company_name = yf.Ticker(ticker).info.get("longName", "Unknown Company")
+        if ticker in self.stock_cache:
+            company_name = self.stock_cache[ticker]
+        else:
+            stock_info = yf.Ticker(ticker).info
+            company_name = stock_info.get("longName", "Unknown Company")
+            self.stock_cache[ticker] = company_name  # Cache the result
+
         self.portfolio.append({"ticker": ticker, "name": company_name})
         return company_name
 

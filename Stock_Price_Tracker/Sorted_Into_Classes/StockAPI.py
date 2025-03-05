@@ -26,10 +26,13 @@ class StockAPI:
     def stock_price_per_share(ticker_symbol: str) -> float:
         stock = yf.Ticker(ticker_symbol)
         try:
-            current_price = stock.info['currentPrice']
-            return round(current_price, 2)
-        except KeyError:
-            print(f"'regularMarketPrice' not found in data for {ticker_symbol}")
+            history = stock.history(period="1d")  # Fetch only today's price
+            if not history.empty:
+                return round(history["Close"].iloc[-1], 2)  # Get last closing price
+            else:
+                return None
+        except Exception as e:
+            print(f"Error fetching data for {ticker_symbol}: {e}")
             return None
 
     @staticmethod
