@@ -4,6 +4,7 @@ import yfinance as yf
 import requests
 from PortfolioManager import PortfolioManager
 from StockAPI import StockAPI
+import sys
 from InvestmentManager import InvestmentManager
 
 API_key = "156DW7OTQGTLJESV"
@@ -57,7 +58,10 @@ class StockGUI:
         tk.Button(self.root, text="Show Portfolio", command=self.show_portfolio).grid(row=4, column=1, padx=10, pady=10)
         tk.Button(self.root, text="Remove Stock", command=self.remove_stock).grid(row=10, column=2, padx=10, pady=10)
         tk.Button(self.root, text="Show Data", command=self.show_stock_data).grid(row=4, column=2, padx=10, pady=10)
+        tk.Button(self.root, text="Add Funds", command=self.add_funds_to_amount).grid(row= 10, column= 1, padx=10, pady=10)
+        tk.Button(self.root, text="Exit Program", command=self.close_program).grid(row= 10, column= 0, padx=10, pady=10)
 
+    
     def update_investment_amount_label(self):
         amount = self.investment_manager.get_investment_amount()
         if amount is not None:
@@ -72,6 +76,20 @@ class StockGUI:
                 self.price_ticker.set(f"${price:.2f}")
             else:
                 self.price_ticker.set("Price not available")
+    
+    def close_program(self):
+        sys.exit()
+                
+    def add_funds_to_amount(self):
+        added_funds = simpledialog.askinteger("Amount You Wish to Add", "Please enter an amount?")
+        if not added_funds:
+            messagebox.showerror("Input Error", "Please provide an amount.")
+            return
+        amount = self.investment_manager.get_investment_amount()
+        amount = amount + added_funds
+        if amount is not None:
+            self.amount_label.config(text=f"${amount:.2f}")
+        return
 
     def fetch_stock_data(self):
         stock_name = self.stock_name_entry.get()
@@ -90,9 +108,19 @@ class StockGUI:
         if not ticker:
             messagebox.showerror("Input Error", "No ticker to add. Find a ticker first.")
             return
+        requested_amount = simpledialog.askstring(f"Amount of {ticker} shares","How many shares would you like to buy?")
+        if not requested_amount:
+            messagebox.showerror("Input Error", "Please provide an amount.")
+            return
+        total = int(requested_amount) * self.api.stock_price_per_share(ticker)
+        amount = self.investment_manager.get_investment_amount()
+        if int(amount) < total:
+            messagebox.showerror("Input Error", "Insufficent Funds!")
+            return
         company_name = self.portfolio_manager.add_stock(ticker)
         self.portfolio_listbox.insert(tk.END, f"{company_name}: {ticker}")
         messagebox.showinfo("Success", f"{ticker} added to your portfolio.")
+
 
     def remove_stock(self):
         selected = self.portfolio_listbox.curselection()

@@ -1,7 +1,8 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog
-import yfinance as yf
+# import yfinance as yf
 import requests
+from StockAPI import StockAPI
 
 API_key = "156DW7OTQGTLJESV"
 
@@ -15,8 +16,7 @@ class PortfolioManager:
         if ticker in self.stock_cache:
             company_name = self.stock_cache[ticker]
         else:
-            stock_info = yf.Ticker(ticker).info
-            company_name = stock_info.get("longName", "Unknown Company")
+            company_name = StockAPI.return_ticker(ticker)
             self.stock_cache[ticker] = company_name  # Cache the result
 
         self.portfolio.append({"ticker": ticker, "name": company_name})
