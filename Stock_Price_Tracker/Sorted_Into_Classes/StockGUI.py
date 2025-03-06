@@ -117,7 +117,7 @@ class StockGUI:
         if int(amount) < total:
             messagebox.showerror("Input Error", "Insufficent Funds!")
             return
-        company_name = self.portfolio_manager.add_stock(ticker)
+        company_name = self.portfolio_manager.add_stock(ticker, int(requested_amount))
         self.portfolio_listbox.insert(tk.END, f"{company_name}: {ticker}")
         messagebox.showinfo("Success", f"{ticker} added to your portfolio.")
 

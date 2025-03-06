@@ -12,14 +12,14 @@ class PortfolioManager:
         self.portfolio = []
         self.stock_cache = {}
 
-    def add_stock(self, ticker: str):
+    def add_stock(self, ticker: str, how_much_of_stock: int):
         if ticker in self.stock_cache:
             company_name = self.stock_cache[ticker]
         else:
             company_name = StockAPI.return_ticker(ticker)
             self.stock_cache[ticker] = company_name  # Cache the result
 
-        self.portfolio.append({"ticker": ticker, "name": company_name})
+        self.portfolio.append({"ticker": ticker, "name": company_name, "Number of shares": how_much_of_stock})
         return company_name
 
     def remove_stock(self, index: int):

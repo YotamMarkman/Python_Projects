@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import messagebox, simpledialog
-# import yfinance as yf
 import requests
 
 API_key = "156DW7OTQGTLJESV"
