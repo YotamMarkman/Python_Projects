@@ -23,22 +23,17 @@ class DataManager:
             print("No data available to plot.")
             return
         plt.figure(figsize=(8, 5))
-        plt.plot(self.df["Standard Deviation"], self.df["Expectation"], marker="o", linestyle="--", color="b", label="Expectation")
-        plt.title("Standard Deviation vs Expectation")
+        plt.plot(self.df["Standard Deviation"], self.df["Expectation"], marker="o", linestyle="--", color="b", label="Efficiency")
+        plt.title("Portfolio Efficiency")
         plt.xlabel("Standard Deviation")
         plt.ylabel("Expectation")
         plt.legend()
         plt.grid(True)
         plt.show()
 
-# # Example Usage
-# if __name__ == "__main__":
-#     manager = DataManager()
-
-#     # Adding data (but not plotting yet)
-#     manager.add_data(5, 50)
-#     manager.add_data(10, 80)
-#     manager.add_data(15, 100)
-
-#     # Plot only when requested
-#     manager.plot_line_chart()
+if __name__ == "__main__":
+    manager = DataManager()
+    manager.add_data(4.65,8.9)
+    manager.add_data(5.65,8.5)
+    manager.add_data(3.65,9.9)
+    manager.plot_line_chart()
