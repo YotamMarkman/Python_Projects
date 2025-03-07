@@ -6,6 +6,9 @@ from PortfolioManager import PortfolioManager
 from StockAPI import StockAPI
 import sys
 from InvestmentManager import InvestmentManager
+from ExpectationAndDeviationCalc import ExpectationAndDeviationCalc
+from Graphs import DataManager
+
 
 API_key = "156DW7OTQGTLJESV"
 
@@ -14,11 +17,11 @@ class StockGUI:
         self.root = tk.Tk()
         self.root.configure(bg="lightblue")
         self.root.title("Stock Tracker")
-
+        self.expectanddeviate = ExpectationAndDeviationCalc()
         self.api = StockAPI()
         self.portfolio_manager = PortfolioManager()
         self.investment_manager = InvestmentManager()
-
+        self.graph = DataManager()
         self.ticker_var = tk.StringVar()
         self.price_ticker = tk.StringVar(value="")
         self.investment_manager.set_update_callback(self.update_investment_amount_label)
@@ -60,12 +63,15 @@ class StockGUI:
         tk.Button(self.root, text="Show Data", command=self.show_stock_data).grid(row=4, column=2, padx=10, pady=10)
         tk.Button(self.root, text="Add Funds", command=self.add_funds_to_amount).grid(row= 10, column= 1, padx=10, pady=10)
         tk.Button(self.root, text="Exit Program", command=self.close_program).grid(row= 10, column= 0, padx=10, pady=10)
-
+        tk.Button(self.root, text="Show Graph", command=self.show_graph).grid(row= 7, column= 2, padx=10, pady=10)
     
     def update_investment_amount_label(self):
         amount = self.investment_manager.get_investment_amount()
         if amount is not None:
             self.amount_label.config(text=f"${amount:.2f}")
+            
+    def show_graph(self):
+        self.graph.plot_line_chart()
     
     def update_price_ticker(self, *args):
         ticker = self.ticker_var.get()
@@ -117,6 +123,11 @@ class StockGUI:
         if int(amount) < total:
             messagebox.showerror("Input Error", "Insufficent Funds!")
             return
+        prices = []
+        prices = self.expectanddeviate.history_of_prices(ticker)
+        expectation = self.expectanddeviate.calc_expectation(prices)
+        deviation = self.expectanddeviate.calculate_deviation(prices)
+        self.graph.add_data(expectation,deviation)
         company_name = self.portfolio_manager.add_stock(ticker, int(requested_amount))
         self.portfolio_listbox.insert(tk.END, f"{company_name}: {ticker}")
         messagebox.showinfo("Success", f"{ticker} added to your portfolio.")
