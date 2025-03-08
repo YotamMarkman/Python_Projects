@@ -127,7 +127,7 @@ class StockGUI:
         prices = self.expectanddeviate.history_of_prices(ticker)
         expectation = self.expectanddeviate.calc_expectation(prices)
         deviation = self.expectanddeviate.calculate_deviation(prices)
-        self.graph.add_data(expectation,deviation)
+        self.graph.add_data(deviation,expectation)
         company_name = self.portfolio_manager.add_stock(ticker, int(requested_amount))
         self.portfolio_listbox.insert(tk.END, f"{company_name}: {ticker}")
         messagebox.showinfo("Success", f"{ticker} added to your portfolio.")

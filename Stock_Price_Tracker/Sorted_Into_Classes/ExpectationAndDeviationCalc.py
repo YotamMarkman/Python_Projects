@@ -3,6 +3,7 @@ import yfinance as yf
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 import time
+import random
 import requests  # Needed for handling HTTP errors
 
 class ExpectationAndDeviationCalc:
@@ -18,6 +19,12 @@ class ExpectationAndDeviationCalc:
         max_attempts = 5  # Number of retry attempts
         for attempt in range(max_attempts):
             try:
+                # Add a longer initial delay
+                if attempt > 0:
+                    backoff_time = 5 + (2 ** attempt) + (random.random() * 2)
+                    print(f"Waiting {backoff_time:.2f} seconds before retry {attempt}...")
+                    time.sleep(backoff_time)
+                
                 stock_data = yf.download(
                     ticker, 
                     start=start_date.strftime("%Y-%m-%d"), 
@@ -30,31 +37,30 @@ class ExpectationAndDeviationCalc:
 
                 return stock_data["Close"].dropna().values.tolist()
             
-            except requests.exceptions.HTTPError as e:  # Handles API errors
-                print(f"HTTP Error: {e}. Retrying in {2 ** attempt} seconds...")
-            except ValueError as e:  # Handles empty data (possible rate limit)
-                print(f"{e} Retrying in {2 ** attempt} seconds...")
-            except Exception as e:  # General error handling
-                print(f"Unexpected Error: {e}. Retrying in {2 ** attempt} seconds...")
-
-            time.sleep(2 ** attempt)  # Exponential backoff
+            except requests.exceptions.HTTPError as e:
+                print(f"HTTP Error: {e}")
+            except ValueError as e:
+                print(f"{e}")
+            except Exception as e:
+                print(f"Unexpected Error: {e}")
 
         print(f"Failed to retrieve data for {ticker} after {max_attempts} attempts.")
-        return None  # Return None instead of an empty list
-
+        return None
+        
     def calc_expectation(self, prices):
         """Calculate the mean of the given prices, handling empty cases."""
         if not prices:  # Check if prices is empty or None
             print("No data available for expectation calculation.")
             return None
-        return np.mean(prices)
+        expectation = np.mean(prices)
+        return round(expectation,2)
 
     def calculate_deviation(self, prices):
         """Calculate the standard deviation, handling empty cases."""
         if not prices:  # Check if prices is empty or None
             print("No data available for deviation calculation.")
             return None
-        self.deviation = np.std(prices, ddof=0)
+        self.deviation = round(np.std(prices, ddof=0),2)
         return self.deviation
 
 # Example Usage

@@ -1,6 +1,6 @@
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import ExpectationAndDeviationCalc as ExpectationAndDeviationCalc
 
 
 #Class which uses the pandas and matplotlib classes to create and add data
@@ -33,7 +33,8 @@ class DataManager:
 
 if __name__ == "__main__":
     manager = DataManager()
-    manager.add_data(4.65,8.9)
-    manager.add_data(5.65,8.5)
-    manager.add_data(3.65,9.9)
-    manager.plot_line_chart()
+    datas = ExpectationAndDeviationCalc()
+    ticker1 = "AAPL"
+    ticker2 = "MSFT"
+    ticker3 = "GOOG"
+    
